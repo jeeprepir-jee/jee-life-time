@@ -1,22 +1,27 @@
 # JEE Life Time — Study OS
 
-A lightweight first version of a personal preparation dashboard for JEE Advanced 2028, JEE Main, AP IPE and AP EAPCET.
+A lightweight browser-based preparation workspace for JEE Advanced 2028, JEE Main, AP IPE and AP EAPCET.
 
-## v1 features
-- Dashboard with study progress
-- Daily study tasks
-- Study-session planner
-- Physics/Chemistry/Mathematics progress tracking
-- Test score log
-- Revision workspace
+## V1 features
+- Dashboard with JEE progress
+- Daily study tasks and session planner
+- PCM progress tracking for JEE/IPE/EAPCET
+- Class 11/12-style chapter checklist
+- Test score and time logging
+- Revision queue
+- Formula vault
+- Original practice question bank
+- Local study coach that creates a plan from available time, energy and weakest subjects
 - Notes with local persistence
+- 25-minute focus timer
 - Responsive mobile layout
 - Dark/light mode
 
-## Run
-Open `index.html` in a browser, or deploy the repository as a static site with GitHub Pages, Netlify or Vercel.
+## Run / deploy
+This is a static site. Open `index.html` directly, or deploy the repository with GitHub Pages, Netlify or Vercel.
 
-## Roadmap
-AI doubt solver, concept explainer, full syllabus/content system, PYQ/test engine, spaced-revision automation, authentication/cloud sync and permitted resource imports will be added incrementally.
+## Important
+The question bank contains original practice prompts, not copied copyrighted PYQs. Add/import only resources you have permission to use. Do not commit API keys, passwords, tokens or private credentials. If an external AI provider is added later, keep its key in a server-side environment variable rather than browser code.
 
-Never commit API keys or credentials. Keep secrets in environment variables outside the repository.
+## Next production upgrades
+Optional future work includes real AI via a protected backend, accounts/cloud sync, richer test authoring, permitted official resource feeds, notifications and PWA/offline support.
