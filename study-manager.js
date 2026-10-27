@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   const STORE = 'jeeOSManagerV1';
-  const today = () => new Date().toLocaleDateString('en-CA');
+  const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
   const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
   const esc = v => String(v == null ? '' : v).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const defaultState = { tasks: [], sessions: [], dailyGoal: 180, activeSession: null, settings: { reminders: false } };
@@ -167,9 +167,6 @@
     });
   }
   addNav();
-  // Keep the legacy dashboard navigation working while adding this module.
-  document.querySelectorAll('.nav-item').forEach(b => b.addEventListener('click', () => { if (b.dataset.view === 'manager') startView(); }));
-  document.querySelectorAll('[data-view-link="manager"]').forEach(b => b.addEventListener('click', startView));
   setInterval(() => { if (state.activeSession) el('sm-clock').textContent = clockText(Date.now() - state.activeSession.startedAt); checkReminders(); }, 1000);
   setInterval(() => { if (state.activeSession) { save(); if (el('view-manager').classList.contains('active-view')) render(); } }, 60000);
   // Provide simple recurring-task templates through the task form's saved defaults, without silently creating duplicates.
