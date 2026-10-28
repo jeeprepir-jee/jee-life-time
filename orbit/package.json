@@ -4,6 +4,7 @@
   "private": true,
   "description": "Android-first local-first PWA for planning, tasks, notes and learning",
   "scripts": {
-    "build": "node build.cjs"
+    "test": "node --test smoke-test.cjs",
+    "build": "npm test && node build.cjs"
   }
 }
