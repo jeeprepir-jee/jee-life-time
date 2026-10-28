@@ -27,7 +27,7 @@
 const KEY='orbit-command-center-v2';
 const $=id=>document.getElementById(id);
 const fresh=()=>({tasks:[],notes:[],videos:[]});
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');return x&&Array.isArray(x.tasks)&&Array.isArray(x.notes)&&Array.isArray(x.videos)?x:fresh()}catch{return fresh()}}
+function load(){try{let raw=localStorage.getItem(KEY);if(!raw){const legacy=localStorage.getItem('orbit-command-center-v1');if(legacy){raw=legacy;localStorage.setItem(KEY,legacy)}}const x=JSON.parse(raw||'null');return x&&Array.isArray(x.tasks)&&Array.isArray(x.notes)&&Array.isArray(x.videos)?x:fresh()}catch{return fresh()}}
 let db=load(),pendingImage='',currentPlan=[],focusInterval=null,installPrompt=null;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(db));renderAll();return true}catch(e){toast('Storage full. Export a backup and remove large images.');return false}}
 function id(){return crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)}
