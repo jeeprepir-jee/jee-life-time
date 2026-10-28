@@ -27,6 +27,12 @@ module.exports = async function handler(req, res) {
   const now = Date.now();
   const forwarded = req.headers['x-forwarded-for'];
   const ip = (typeof forwarded === 'string' ? forwarded.split(',')[0] : 'unknown').trim().slice(0, 100);
+  if (requestsByIp.size > 2000) {
+    for (const [key, value] of requestsByIp) {
+      if (now - value.start >= WINDOW_MS) requestsByIp.delete(key);
+    }
+    if (requestsByIp.size > 2000) requestsByIp.clear();
+  }
   const entry = requestsByIp.get(ip);
   if (entry && now - entry.start < WINDOW_MS && entry.count >= MAX_REQUESTS) {
     return send(res, 429, { error: 'Too many messages too quickly. Please wait a minute and try again.' });
@@ -49,9 +55,6 @@ module.exports = async function handler(req, res) {
       .map(m => ({ role: m.role, content: m.content.trim().slice(0, 3000) }))
       .filter(m => m.content.length > 0);
 
-    if (messages.reduce((sum, m) => sum + m.content.length, 0) > 12000) {
-      return send(res, 413, { error: 'This chat context is too long. Start a new chat or send a shorter excerpt.' });
-    }
     if (!messages.length || !messages.some(m => m.role === 'user')) {
       return send(res, 400, { error: 'Type a message before sending.' });
     }
@@ -70,7 +73,7 @@ module.exports = async function handler(req, res) {
         max_output_tokens: 700,
         store: false
       }),
-      signal: AbortSignal.timeout(45000)
+      signal: AbortSignal.timeout(25000)
     });
 
     const result = await upstream.json().catch(() => ({}));
