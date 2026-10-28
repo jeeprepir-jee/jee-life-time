@@ -55,6 +55,11 @@ module.exports = async function handler(req, res) {
       .map(m => ({ role: m.role, content: m.content.trim().slice(0, 3000) }))
       .filter(m => m.content.length > 0);
 
+    while (messages.length > 1 && messages.reduce((sum, m) => sum + m.content.length, 0) > 12000) messages.shift();
+    if (messages.reduce((sum, m) => sum + m.content.length, 0) > 12000) {
+      return send(res, 413, { error: 'This message is too long. Please shorten it and try again.' });
+    }
+
     if (!messages.length || !messages.some(m => m.role === 'user')) {
       return send(res, 400, { error: 'Type a message before sending.' });
     }
