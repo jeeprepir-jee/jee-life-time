@@ -68,13 +68,15 @@ test('Chat API method, configuration, validation and mocked Responses API succes
     };
     delete process.env.OPENAI_MODEL;
     const successRes = mockResponse();
-    await handler({ method: 'POST', headers: { 'x-forwarded-for': 'smoke-test-ip' }, body: { messages: [{ role: 'user', content: 'Reply with a short test.' }] } }, successRes);
+    const longHistory = Array.from({ length: 8 }, (_, i) => ({ role: i % 2 ? 'assistant' : 'user', content: 'x'.repeat(2500) }));
+    await handler({ method: 'POST', headers: { 'x-forwarded-for': 'smoke-test-ip' }, body: { messages: longHistory } }, successRes);
     assert.equal(successRes.statusCode, 200);
     assert.equal(successRes.json().reply, 'Smoke-test reply');
     assert.equal(captured.url, 'https://api.openai.com/v1/responses');
     assert.equal(captured.init.headers.Authorization, 'Bearer fake-api-key-for-unit-test');
     assert.equal(captured.body.model, 'gpt-6-luna');
     assert.equal(captured.body.store, false);
+    assert.ok(captured.body.input.reduce((sum, m) => sum + m.content.length, 0) <= 12000, 'context is trimmed to the configured budget');
     assert.ok(captured.init.signal, 'upstream request has an abort signal');
   } finally {
     global.fetch = oldFetch;
