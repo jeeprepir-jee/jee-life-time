@@ -45,10 +45,13 @@ module.exports = async function handler(req, res) {
 
     const messages = body.messages
       .filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
-      .slice(-16)
-      .map(m => ({ role: m.role, content: m.content.trim().slice(0, 4000) }))
+      .slice(-12)
+      .map(m => ({ role: m.role, content: m.content.trim().slice(0, 3000) }))
       .filter(m => m.content.length > 0);
 
+    if (messages.reduce((sum, m) => sum + m.content.length, 0) > 12000) {
+      return send(res, 413, { error: 'This chat context is too long. Start a new chat or send a shorter excerpt.' });
+    }
     if (!messages.length || !messages.some(m => m.role === 'user')) {
       return send(res, 400, { error: 'Type a message before sending.' });
     }
@@ -64,7 +67,7 @@ module.exports = async function handler(req, res) {
         model,
         instructions: 'You are Orbit AI, a helpful assistant inside a personal planning and study app. Be clear, encouraging, and practical. Help with JEE/IPE study planning, explanations, note summaries, and task organisation. Do not claim to have accessed the user’s Orbit tasks, notes, calendar, or videos unless their contents were explicitly included in the chat. Do not claim to create reminders or change app data. For a teen student, support balanced study, sleep, breaks, and safe choices.',
         input: messages,
-        max_output_tokens: 900,
+        max_output_tokens: 700,
         store: false
       }),
       signal: AbortSignal.timeout(45000)
