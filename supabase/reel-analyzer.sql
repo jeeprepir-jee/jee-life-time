@@ -23,3 +23,5 @@ create table if not exists public.notes (
 alter table public.reels enable row level security;
 alter table public.notes enable row level security;
 -- Server-side service role is used only by Vercel API routes. Do not expose it in the browser.
+
+create unique index if not exists notes_reel_id_unique on public.notes(reel_id);
