@@ -68,7 +68,8 @@ async function startSync(user) {
     // Preserve this browser's existing data; restore cloud-only keys where this browser has none.
     const merged = { ...remote, ...local };
     applyCloudData(merged);
-    await setDoc(ref, { data: merged, updatedAtMs: Date.now(), updatedAt: serverTimestamp() }, { merge: true });
+    lastLocalWrite = Date.now();
+    await setDoc(ref, { data: merged, updatedAtMs: lastLocalWrite, updatedAt: serverTimestamp() }, { merge: true });
     if (Object.keys(local).length === 0 && Object.keys(remote).length) location.reload();
   }
   stopRemote = onSnapshot(ref, snapshot => {
